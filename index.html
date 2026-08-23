@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ullmann C–N Coupling Explorer</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+</head>
+<body>
+<main>
+<header>
+  <h1>Ullmann C–N Coupling Chemical Space Explorer</h1>
+  <p>Enter an amine and aryl bromide SMILES to locate the substrate combination in the manuscript-derived threshold and PCA chemical spaces.</p>
+</header>
+
+<section class="panel">
+  <div class="inputs">
+    <label>Amine SMILES<input id="amine" placeholder="Enter amine SMILES"></label>
+    <label>Aryl bromide SMILES<input id="bromide" placeholder="Enter aryl bromide SMILES"></label>
+  </div>
+  <button id="go" disabled>Loading chemistry engine…</button>
+  <p id="status"></p>
+</section>
+
+<section id="matches" class="panel hidden">
+  <h2>Library matching</h2>
+  <div class="matches">
+    <article><h3>Amine</h3><div id="amineSvg" class="structure"></div><div id="amineInfo"></div></article>
+    <article><h3>Aryl bromide</h3><div id="bromideSvg" class="structure"></div><div id="bromideInfo"></div></article>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="heading"><div><h2>Two-descriptor threshold plot</h2>
+  <p>Amine lone-pair energy vs aryl-bromide buried volume.</p></div>
+  <span id="prediction" class="badge">Waiting for input</span></div>
+  <div id="thresholdPlot" class="plot"></div>
+</section>
+
+<section class="panel">
+  <h2>PCA-derived chemical space</h2>
+  <p>The user point is projected with the same fitted scaling and PCA transformation used for the reference dataset.</p>
+  <div id="pcaPlot" class="plot"></div>
+</section>
+</main>
+
+<div id="structure-hover" class="structure-hover hidden-hover" aria-hidden="true">
+  <div class="hover-title" id="hover-product"></div>
+  <div class="hover-structures">
+    <div>
+      <div class="hover-label">Amine</div>
+      <div id="hover-amine-svg" class="hover-svg"></div>
+      <div id="hover-amine-smiles" class="hover-smiles"></div>
+    </div>
+    <div>
+      <div class="hover-label">Aryl bromide</div>
+      <div id="hover-bromide-svg" class="hover-svg"></div>
+      <div id="hover-bromide-smiles" class="hover-smiles"></div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body></html>
