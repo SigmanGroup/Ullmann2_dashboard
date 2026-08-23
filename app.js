@@ -54,70 +54,182 @@ function project(am,br){
   return DATA.pca.components.map(comp=>comp.reduce((s,w,i)=>s+w*z[i],0));
 }
 function thresholdPlot(user=null){
-  const groups=["HTE Round 1","HTE Round 2","Validation"];
-  const traces=groups.map(g=>{
-    const p=DATA.threshold_points.filter(d=>d.group===g);
-    return {
-      x:p.map(d=>d.x),
-      y:p.map(d=>d.y),
-      text:p.map(d=>d.product),
-      customdata:p.map(d=>({
-        product:d.product,
-        amine_smiles:d.amine_smiles,
-        bromide_smiles:d.bromide_smiles,
-        yield:d.yield
-      })),
-      mode:"markers",
-      type:"scatter",
-      name:g,
-      marker:{
-        size:g==="Validation" ? p.map(d=>Math.max(8,2*Math.sqrt((Number(d.yield)||0)*7/Math.PI))) : 10,
-        symbol:g==="Validation"?"x":"circle",
-        color:p.map(d=>d.yield),
-        colorscale:"GnBu",
-        cmin:0,
-        cmax:100,
-        showscale:g==="HTE Round 1",
-        colorbar:g==="HTE Round 1"?{title:"Average yield"}:undefined,
-        line:{color:"#777",width:.6}
-      },
-      hovertemplate:
-        "<b>%{text}</b><br>Amine descriptor: %{x:.4f}<br>Bromide descriptor: %{y:.2f}<br>Average yield: %{customdata.yield:.1f}<extra></extra>"
-    };
-  });
 
-  if(user) traces.push({
-    x:[user.x],
-    y:[user.y],
-    mode:"markers+text",
-    text:["User"],
-    textposition:"top right",
-    name:"User input",
-    marker:{size:18,color:"red",line:{color:"black",width:2}},
-    hovertemplate:"User input<extra></extra>"
-  });
+  const tested = DATA.threshold_points.filter(
+    d => d.group === "HTE Round 1" || d.group === "HTE Round 2"
+  );
+
+  const validation = DATA.threshold_points.filter(
+    d => d.group === "Validation"
+  );
+
+  const traces = [
+
+    // Tested products: HTE Round 1 + HTE Round 2
+    {
+      x: tested.map(d => d.x),
+      y: tested.map(d => d.y),
+      text: tested.map(d => d.product),
+
+      customdata: tested.map(d => ({
+        product: d.product,
+        amine_smiles: d.amine_smiles,
+        bromide_smiles: d.bromide_smiles,
+        yield: d.yield
+      })),
+
+      mode: "markers",
+      type: "scatter",
+      name: "Tested products",
+
+      marker: {
+        size: 10,
+        symbol: "circle",
+        color: tested.map(d => d.yield),
+        colorscale: "GnBu",
+        cmin: 0,
+        cmax: 100,
+        showscale: true,
+        colorbar: {
+          title: "Average yield"
+        },
+        line: {
+          color: "grey",
+          width: 0.6
+        }
+      },
+
+      hovertemplate:
+        "<b>%{text}</b><br>" +
+        "Amine descriptor: %{x:.4f}<br>" +
+        "Bromide descriptor: %{y:.2f}<br>" +
+        "Average yield: %{customdata.yield:.1f}<extra></extra>"
+    },
+
+    // Validation products
+    {
+      x: validation.map(d => d.x),
+      y: validation.map(d => d.y),
+      text: validation.map(d => d.product),
+
+      customdata: validation.map(d => ({
+        product: d.product,
+        amine_smiles: d.amine_smiles,
+        bromide_smiles: d.bromide_smiles,
+        yield: d.yield
+      })),
+
+      mode: "markers",
+      type: "scatter",
+      name: "Validation products",
+
+      marker: {
+        size: 14,
+        symbol: "x",
+        color: validation.map(d => d.yield),
+        colorscale: "GnBu",
+        cmin: 0,
+        cmax: 100,
+        showscale: false,
+        line: {
+          color: "black",
+          width: 1.2
+        }
+      },
+
+      hovertemplate:
+        "<b>%{text}</b><br>" +
+        "Amine descriptor: %{x:.4f}<br>" +
+        "Bromide descriptor: %{y:.2f}<br>" +
+        "Average yield: %{customdata.yield:.1f}<extra></extra>"
+    }
+
+  ];
+
+  // User input point
+  if(user){
+    traces.push({
+      x: [user.x],
+      y: [user.y],
+      mode: "markers+text",
+      text: ["User"],
+      textposition: "top right",
+      name: "User input",
+      showlegend: false,
+      marker: {
+        size: 18,
+        color: "red",
+        line: {
+          color: "black",
+          width: 2
+        }
+      },
+      hovertemplate: "User input<extra></extra>"
+    });
+  }
 
   Plotly.react(
     "thresholdPlot",
     traces,
     {
-      margin:{l:70,r:30,t:55,b:65},
-      hovermode:"closest",
-      xaxis:{title:"Amine_LP_energy_min"},
-      yaxis:{title:"Bromide_buried_vol_3.0Å_boltz"},
-      shapes:[
-        {type:"line",x0:DATA.thresholds.x,x1:DATA.thresholds.x,y0:0,y1:1,yref:"paper",line:{color:"black",dash:"dash"}},
-        {type:"line",y0:DATA.thresholds.y,y1:DATA.thresholds.y,x0:0,x1:1,xref:"paper",line:{color:"firebrick",dash:"dash"}}
+      margin: {
+        l: 70,
+        r: 30,
+        t: 70,
+        b: 65
+      },
+
+      hovermode: "closest",
+
+      xaxis: {
+        title: "Amine_LP_energy_min"
+      },
+
+      yaxis: {
+        title: "Bromide_buried_vol_3.0Å_boltz"
+      },
+
+      shapes: [
+        {
+          type: "line",
+          x0: DATA.thresholds.x,
+          x1: DATA.thresholds.x,
+          y0: 0,
+          y1: 1,
+          yref: "paper",
+          line: {
+            color: "black",
+            dash: "dash"
+          }
+        },
+        {
+          type: "line",
+          y0: DATA.thresholds.y,
+          y1: DATA.thresholds.y,
+          x0: 0,
+          x1: 1,
+          xref: "paper",
+          line: {
+            color: "firebrick",
+            dash: "dash"
+          }
+        }
       ],
-      legend:{
-        orientation:"h",
-        x:0.5,
-        xanchor:"center",
-        y:1.11,
-        yanchor:"bottom"
+
+      legend: {
+        orientation: "h",
+        x: 0.5,
+        xanchor: "center",
+        y: 1.12,
+        yanchor: "bottom"
       }
     },
-    {responsive:true,displaylogo:false}
+
+    {
+      responsive: true,
+      displaylogo: false
+    }
+
   ).then(() => attachStructureHover("thresholdPlot"));
 }
 
