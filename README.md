@@ -1,5 +1,5 @@
 ## Dashboard for Predicting Effective Substrate Combinations for Cu-catalyzed Ullmann Coupling with N1, N2-diarylbenzene-1,2-diamine Ligands
-Static GitHub Pages dashboard generated from the supplied amine library, aryl-bromide library, and `all_products_for_ullmann1_2.xlsx`and all other necessary files from InputData
+Static GitHub Pages dashboard was generated from the amine library, aryl-bromide library, and all other necessary files that are provided in the manuscript, and at https://github.com/SigmanGroup/Ullmann_v2
 
 ### What does the dashboard do?
 
